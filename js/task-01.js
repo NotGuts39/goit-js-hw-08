@@ -67,32 +67,16 @@ const images = [
 
 const ul = document.querySelector('.gallery');
 
+const markUp = images.map(el => `
+    <li class="gallery-item">
+        <a class="gallery-link" href="${el.original}">
+            <img class="gallery-image" src="${el.preview}" data-source="${el.original}" alt="${el.description}">
+        </a>
+    </li>
+`);
 
-images.forEach(el => {
+ul.insertAdjacentHTML('beforeend', markUp.join(''));
 
-    const li = document.createElement('li');
-    li.classList.add('gallery-item');
-
-    const a = document.createElement('a');
-    a.classList.add('gallery-link');
-    a.href = el.original;
-
-    a.addEventListener("click", event => {
-    event.preventDefault();
-  });
-    
-    const img = document.createElement('img');
-    img.classList.add('gallery-image');
-    img.src = el.preview;
-    img.setAttribute('data-source', el.original);
-    img.alt = el.description;
-
-    a.appendChild(img);
-    li.appendChild(a);
-    ul.appendChild(li);
-
-
-});
 
 
 ul.addEventListener('click', event => {
@@ -101,40 +85,55 @@ ul.addEventListener('click', event => {
 
     
 
-    if (event.target.classList.contains('gallery-image')) {
+  if (!event.target.classList.contains('gallery-image')) { 
+
+    return;
+  }
+
+
 
         const bigImage = event.target.getAttribute('data-source');
-        console.log(`${bigImage}`);
-        
-
+        const description = event.target.getAttribute('alt')
+            
 
         const lightbox = basicLightbox.create(`
-            <img src="${bigImage}" >
-        `);
+            <img src="${bigImage}" alt="${description}" >
+        `, {
+
+    onShow: (instance) => {
+        document.addEventListener('keydown', modalClose);
+       
+          },
+          
+    onClose: (instance) => {
+        document.removeEventListener('keydown', modalClose);
+        
+          }
+    
+        });
+    
         lightbox.show();
 
 
-        document.addEventListener('keydown', modalClose);
+        
 
 
+  
+  
+  
         function modalClose(event) {
 
     if (event.key === 'Escape') {
 
         lightbox.close();
 
-        document.removeEventListener('keydown', modalClose);
-
-        
+                
     }
-}
-
        
     }
 
-          
-    
-});
+        
+    });
 
 
 
